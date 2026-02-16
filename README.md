@@ -1,73 +1,127 @@
-# React + TypeScript + Vite
+# Kenai Land Sales 🏔️
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+**Alaska's Premier Land Marketplace**
 
-Currently, two official plugins are available:
+Professional land listing platform built with React 19, TypeScript, Tailwind CSS v4, and Supabase. Simple $10 flat-fee model for 60-day listings.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🌟 Features
 
-## React Compiler
+### Standard Features
+- **$10 Flat Fee** - 60-day listing duration
+- **Stripe Checkout Integration** - Secure payment processing
+- **Rich Media Support** - 10+ photos per listing, video support
+- **Advanced Search & Filtering** - By price, acreage, location, utilities
+- **Map Integration** - View properties on interactive maps
+- **Contact Messaging** - Direct seller communication
+- **User Accounts** - Seller dashboards with analytics
+- **Featured Listings** - Optional $20 upgrade for homepage placement
+- **Mobile Responsive** - Perfect on all devices
+- **SEO Optimized** - Meta tags, sitemaps, structured data
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### Land-Specific Features
+- **Acreage Calculator** - Automatic calculations
+- **Zoning Information** - Display zoning details
+- **Topography Fields** - Terrain description
+- **Utilities Checklist** - Water, electric, sewer, gas
+- **Road Access Details** - Paved, gravel, trail, or none
+- **Parcel Number Integration** - Track official records
+- **Survey Document Upload** - Attach legal documents
+- **Land Use Suggestions** - Hunting, cabin, recreation ideas
+- **Property Tax Estimator** - Annual tax information
 
-## Expanding the ESLint configuration
+### Trust & Safety
+- **"How to Avoid Scams"** - Comprehensive guide
+- **Safety Guidelines** - Meet in public, payment tips
+- **Verified Sellers** - Email and payment verification
+- **Report Listing** - Flag suspicious content
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## 🚀 Quick Start
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+cd kenai-land-sales
+npm install
+cp .env.example .env
+# Edit .env with your credentials
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Visit http://localhost:5173
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## 📦 Environment Variables
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```env
+VITE_SUPABASE_URL=https://your-project.supabase.co
+VITE_SUPABASE_ANON_KEY=your_anon_key_here
+VITE_STRIPE_PUBLISHABLE_KEY=pk_test_your_key_here
+VITE_APP_URL=http://localhost:5173
+VITE_APP_NAME=Kenai Land Sales
 ```
+
+## 🗄️ Database Setup
+
+1. Create Supabase project at https://supabase.com
+2. Run `/KENAI_PLATFORMS_DATABASE_SCHEMA.sql` in SQL editor
+3. Copy connection details to `.env`
+
+## 💳 Payment Setup
+
+1. Create Stripe account at https://stripe.com
+2. Get publishable key from dashboard
+3. Add to `.env` file
+
+## 🏗️ Build & Deploy
+
+```bash
+npm run build  # Production build
+npm run preview  # Preview build locally
+```
+
+Deploy `dist/` folder to:
+- GitHub Pages
+- Netlify
+- Vercel
+- Any static host
+
+## 📁 Project Structure
+
+```
+src/
+├── components/  # UI components
+├── pages/       # Route pages
+├── lib/         # Utilities (Supabase, Stripe)
+├── types/       # TypeScript definitions
+├── App.tsx      # Main app
+└── main.tsx     # Entry point
+```
+
+## 🔒 Security
+
+- Row Level Security (RLS) enabled
+- Email verification required
+- Secure Stripe payments
+- Input sanitization
+
+## 📱 Mobile Responsive
+
+- Breakpoints: 768px (tablet), 1024px (desktop)
+- Touch-friendly interface
+- Optimized images
+
+## 🎨 Tech Stack
+
+- React 19
+- TypeScript
+- Vite 6
+- Tailwind CSS v4
+- Supabase (PostgreSQL + Auth)
+- Stripe Checkout
+- React Router 7
+- Lucide Icons
+
+## 🆘 Support
+
+Email: support@kenailandsales.com
+
+---
+
+**Built in Alaska** 🏔️
