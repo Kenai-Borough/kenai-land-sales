@@ -1,15 +1,26 @@
-import { useState } from 'react'
-import { Link } from 'react-router-dom'
-import { Menu, X, User, LogOut } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { Link, NavLink } from 'react-router-dom'
+import { LogOut, Menu, MoonStar, SunMedium, User, X } from 'lucide-react'
 import { getCurrentUser, signOut } from '../lib/supabase'
+import { useTheme } from '../context/ThemeContext'
+import { cn } from '../lib/utils'
+
+const navItems = [
+  { to: '/browse', label: 'Browse' },
+  { to: '/guide', label: 'FSBO Guide' },
+  { to: '/market-data', label: 'Market Data' },
+  { to: '/closing-process', label: 'Closing' },
+  { to: '/dashboard', label: 'Dashboard' },
+]
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const [user, setUser] = useState<any>(null)
+  const [user, setUser] = useState<Awaited<ReturnType<typeof getCurrentUser>> | null>(null)
+  const { theme, toggleTheme } = useTheme()
 
-  useState(() => {
+  useEffect(() => {
     getCurrentUser().then(setUser)
-  })
+  }, [])
 
   const handleSignOut = async () => {
     await signOut()
@@ -18,92 +29,110 @@ export default function Header() {
   }
 
   return (
-    <header className="bg-white shadow-sm sticky top-0 z-50">
-      <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-16">
-          <div className="flex items-center">
-            <Link to="/" className="flex items-center">
-              <span className="text-2xl font-bold text-blue-600">
-                {import.meta.env.VITE_APP_NAME || 'Kenai Platform'}
-              </span>
-            </Link>
+    <header className="sticky top-0 z-50 border-b border-white/10 bg-[color:var(--color-bg)]/85 backdrop-blur-xl">
+      <nav className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
+        <Link to="/" className="flex items-center gap-3">
+          <div className="rounded-2xl bg-[var(--color-primary)] p-2 text-white shadow-lg">
+            <svg viewBox="0 0 64 64" className="h-7 w-7 fill-current">
+              <path d="M9 48 24 28l8 10 9-15 14 25H9Z" />
+              <path d="M15 50h34v6H15z" />
+            </svg>
           </div>
+          <div>
+            <p className="text-lg font-semibold tracking-wide">Kenai Land Sales</p>
+            <p className="text-xs uppercase tracking-[0.35em] text-[var(--color-muted)]">
+              Your Land, Your Sale
+            </p>
+          </div>
+        </Link>
 
-          <div className="hidden md:flex items-center space-x-8">
-            <Link to="/browse" className="text-gray-700 hover:text-blue-600 font-medium">
-              Browse Listings
-            </Link>
-            <Link to="/how-it-works" className="text-gray-700 hover:text-blue-600 font-medium">
-              How It Works
-            </Link>
-            <Link to="/safety" className="text-gray-700 hover:text-blue-600 font-medium">
-              Safety Tips
-            </Link>
-            {user ? (
-              <>
-                <Link to="/dashboard" className="text-gray-700 hover:text-blue-600 font-medium">
-                  My Dashboard
-                </Link>
-                <button onClick={handleSignOut} className="text-gray-700 hover:text-blue-600 flex items-center gap-2">
-                  <LogOut size={18} />
-                  Sign Out
-                </button>
-              </>
-            ) : (
-              <Link to="/login" className="text-gray-700 hover:text-blue-600 flex items-center gap-2">
-                <User size={18} />
-                Sign In
-              </Link>
-            )}
-            <Link
-              to="/create-listing"
-              className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 font-semibold"
+        <div className="hidden items-center gap-6 lg:flex">
+          {navItems.map((item) => (
+            <NavLink
+              key={item.to}
+              to={item.to}
+              className={({ isActive }) =>
+                cn(
+                  'text-sm font-medium text-[var(--color-muted)] transition hover:text-[var(--color-text)]',
+                  isActive && 'text-[var(--color-text)]',
+                )
+              }
             >
-              Post Listing - $10
-            </Link>
-          </div>
-
-          <div className="md:hidden flex items-center">
-            <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="text-gray-700">
-              {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
-            </button>
-          </div>
+              {item.label}
+            </NavLink>
+          ))}
         </div>
 
-        {isMenuOpen && (
-          <div className="md:hidden pb-4">
-            <Link to="/browse" className="block py-2 text-gray-700 hover:text-blue-600">
-              Browse Listings
-            </Link>
-            <Link to="/how-it-works" className="block py-2 text-gray-700 hover:text-blue-600">
-              How It Works
-            </Link>
-            <Link to="/safety" className="block py-2 text-gray-700 hover:text-blue-600">
-              Safety Tips
-            </Link>
-            {user ? (
-              <>
-                <Link to="/dashboard" className="block py-2 text-gray-700 hover:text-blue-600">
-                  My Dashboard
-                </Link>
-                <button onClick={handleSignOut} className="block py-2 text-gray-700 hover:text-blue-600 w-full text-left">
-                  Sign Out
-                </button>
-              </>
+        <div className="hidden items-center gap-3 lg:flex">
+          <button
+            type="button"
+            onClick={toggleTheme}
+            className="rounded-full border border-white/10 bg-[var(--color-surface-elevated)] p-3"
+          >
+            {theme === 'dark' ? (
+              <SunMedium className="h-4 w-4" />
             ) : (
-              <Link to="/login" className="block py-2 text-gray-700 hover:text-blue-600">
-                Sign In
-              </Link>
+              <MoonStar className="h-4 w-4" />
             )}
+          </button>
+          {user ? (
+            <button
+              type="button"
+              onClick={handleSignOut}
+              className="inline-flex items-center gap-2 rounded-full border border-white/10 px-4 py-2 text-sm font-semibold"
+            >
+              <LogOut className="h-4 w-4" />
+              Sign out
+            </button>
+          ) : (
+            <Link
+              to="/login"
+              className="inline-flex items-center gap-2 rounded-full border border-white/10 px-4 py-2 text-sm font-semibold"
+            >
+              <User className="h-4 w-4" />
+              Sign in
+            </Link>
+          )}
+          <Link
+            to="/create-listing"
+            className="rounded-full bg-[var(--color-primary)] px-5 py-3 text-sm font-semibold text-white"
+          >
+            List Your Land Free
+          </Link>
+        </div>
+
+        <button
+          type="button"
+          onClick={() => setIsMenuOpen((current) => !current)}
+          className="rounded-full border border-white/10 p-3 lg:hidden"
+        >
+          {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+        </button>
+      </nav>
+
+      {isMenuOpen ? (
+        <div className="border-t border-white/10 bg-[var(--color-bg)] px-4 py-4 lg:hidden">
+          <div className="flex flex-col gap-3">
+            {navItems.map((item) => (
+              <NavLink
+                key={item.to}
+                to={item.to}
+                onClick={() => setIsMenuOpen(false)}
+                className="rounded-2xl px-4 py-3 text-sm font-medium text-[var(--color-muted)] hover:bg-[var(--color-surface-elevated)]"
+              >
+                {item.label}
+              </NavLink>
+            ))}
             <Link
               to="/create-listing"
-              className="block mt-4 bg-blue-600 text-white px-6 py-2 rounded-lg text-center hover:bg-blue-700"
+              onClick={() => setIsMenuOpen(false)}
+              className="rounded-2xl bg-[var(--color-primary)] px-4 py-3 text-center text-sm font-semibold text-white"
             >
-              Post Listing - $10
+              List Your Land Free
             </Link>
           </div>
-        )}
-      </nav>
+        </div>
+      ) : null}
     </header>
   )
 }

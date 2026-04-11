@@ -1,59 +1,73 @@
 import { Link } from 'react-router-dom'
-import { Shield, Heart } from 'lucide-react'
+import { ShieldCheck, Trees } from 'lucide-react'
+import { sisterSites } from '../data/parcels'
 
 export default function Footer() {
   return (
-    <footer className="bg-gray-900 text-white mt-20">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          <div>
-            <h3 className="text-xl font-bold mb-4">{import.meta.env.VITE_APP_NAME || 'Kenai Platform'}</h3>
-            <p className="text-gray-400">
-              Alaska's most trusted listing platform. Simple, safe, and affordable.
-            </p>
-          </div>
-
-          <div>
-            <h4 className="font-semibold mb-4">For Buyers</h4>
-            <ul className="space-y-2 text-gray-400">
-              <li><Link to="/browse" className="hover:text-white">Browse Listings</Link></li>
-              <li><Link to="/how-it-works" className="hover:text-white">How It Works</Link></li>
-              <li><Link to="/safety" className="hover:text-white">Safety Tips</Link></li>
-            </ul>
-          </div>
-
-          <div>
-            <h4 className="font-semibold mb-4">For Sellers</h4>
-            <ul className="space-y-2 text-gray-400">
-              <li><Link to="/create-listing" className="hover:text-white">Post a Listing</Link></li>
-              <li><Link to="/pricing" className="hover:text-white">Pricing</Link></li>
-              <li><Link to="/dashboard" className="hover:text-white">Seller Dashboard</Link></li>
-            </ul>
-          </div>
-
-          <div>
-            <h4 className="font-semibold mb-4">Company</h4>
-            <ul className="space-y-2 text-gray-400">
-              <li><Link to="/about" className="hover:text-white">About Us</Link></li>
-              <li><Link to="/contact" className="hover:text-white">Contact</Link></li>
-              <li><Link to="/terms" className="hover:text-white">Terms of Service</Link></li>
-              <li><Link to="/privacy" className="hover:text-white">Privacy Policy</Link></li>
-            </ul>
-          </div>
-        </div>
-
-        <div className="border-t border-gray-800 mt-8 pt-8 flex flex-col md:flex-row justify-between items-center">
-          <div className="flex items-center gap-2 text-gray-400">
-            <Shield size={20} />
-            <span>Secure Platform</span>
-            <span className="mx-2">•</span>
-            <Heart size={20} />
-            <span>Made in Alaska</span>
-          </div>
-          <p className="text-gray-400 mt-4 md:mt-0">
-            © {new Date().getFullYear()} {import.meta.env.VITE_APP_NAME}. All rights reserved.
+    <footer className="mt-24 border-t border-white/10 bg-[var(--color-surface)]">
+      <div className="mx-auto grid max-w-7xl gap-10 px-4 py-14 sm:px-6 lg:grid-cols-[1.3fr_.9fr_.9fr] lg:px-8">
+        <div>
+          <h3 className="text-2xl font-semibold">Kenai Land Sales</h3>
+          <p className="mt-4 max-w-xl text-[var(--color-muted)]">
+            Owner-direct land sales for the Kenai Peninsula. Verified trust signals,
+            optional closing support, and no hidden fees.
           </p>
+          <div className="mt-6 flex flex-wrap gap-3 text-sm">
+            <span className="inline-flex items-center gap-2 rounded-full bg-[var(--color-surface-elevated)] px-4 py-2">
+              <ShieldCheck className="h-4 w-4 text-[var(--color-primary)]" />
+              Clear title messaging
+            </span>
+            <span className="inline-flex items-center gap-2 rounded-full bg-[var(--color-surface-elevated)] px-4 py-2">
+              <Trees className="h-4 w-4 text-[var(--color-primary)]" />
+              Built for Alaska acreage
+            </span>
+          </div>
         </div>
+
+        <div>
+          <h4 className="text-sm font-semibold uppercase tracking-[0.3em] text-[var(--color-muted)]">
+            Explore
+          </h4>
+          <div className="mt-4 space-y-3 text-sm">
+            <Link to="/browse" className="block hover:text-[var(--color-primary)]">
+              Browse parcels
+            </Link>
+            <Link to="/guide" className="block hover:text-[var(--color-primary)]">
+              FSBO guide
+            </Link>
+            <Link to="/due-diligence" className="block hover:text-[var(--color-primary)]">
+              Due diligence center
+            </Link>
+            <Link to="/closing-process" className="block hover:text-[var(--color-primary)]">
+              Escrow and closing
+            </Link>
+            <Link to="/market-data" className="block hover:text-[var(--color-primary)]">
+              Pricing intelligence
+            </Link>
+          </div>
+        </div>
+
+        <div>
+          <h4 className="text-sm font-semibold uppercase tracking-[0.3em] text-[var(--color-muted)]">
+            Network
+          </h4>
+          <div className="mt-4 space-y-3 text-sm text-[var(--color-muted)]">
+            {sisterSites.map((site) => (
+              <a
+                key={site}
+                href={site}
+                target="_blank"
+                rel="noreferrer"
+                className="block hover:text-[var(--color-primary)]"
+              >
+                {site.replace('https://', '')}
+              </a>
+            ))}
+          </div>
+        </div>
+      </div>
+      <div className="border-t border-white/10 px-4 py-5 text-center text-sm text-[var(--color-muted)]">
+        © 2026 Kenai Land Sales • kenailandsales.com • Trusted Alaska FSBO land sales
       </div>
     </footer>
   )

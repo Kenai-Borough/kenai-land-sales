@@ -1,35 +1,46 @@
-import { Shield, CheckCircle, DollarSign, Clock } from 'lucide-react'
+import { BadgeCheck, FileCheck2, HandCoins, ShieldCheck, Users } from 'lucide-react'
+
+const items = [
+  {
+    icon: BadgeCheck,
+    title: 'Verified seller profiles',
+    copy: 'Every featured owner displays response rate, close history, and badge status.',
+  },
+  {
+    icon: FileCheck2,
+    title: 'Clear title workflow',
+    copy: 'Listings highlight survey, title, and disclosure progress before a buyer tours.',
+  },
+  {
+    icon: HandCoins,
+    title: 'Escrow-first closings',
+    copy: 'Owners stay in control while title and escrow professionals handle funds and recording.',
+  },
+  {
+    icon: Users,
+    title: 'Local-first reputation',
+    copy: 'Built for Kenai Peninsula landowners who want a trusted owner-direct sale.',
+  },
+  {
+    icon: ShieldCheck,
+    title: 'No hidden fees',
+    copy: 'List free, add optional services only when they genuinely help the transaction.',
+  },
+]
 
 export default function TrustBadge() {
   return (
-    <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 my-8">
-      <h3 className="text-lg font-semibold text-blue-900 mb-4 flex items-center gap-2">
-        <Shield className="text-blue-600" size={24} />
-        Why Trust Our Platform?
-      </h3>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="flex items-start gap-3">
-          <CheckCircle className="text-green-600 mt-1 flex-shrink-0" size={20} />
-          <div>
-            <h4 className="font-semibold text-gray-900">Verified Listings</h4>
-            <p className="text-sm text-gray-600">All sellers verified via email and payment</p>
-          </div>
+    <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
+      {items.map((item) => (
+        <div
+          key={item.title}
+          className="rounded-3xl border border-white/10 bg-[color:var(--color-surface-elevated)] p-5 shadow-lg"
+        >
+          <item.icon className="h-9 w-9 text-[var(--color-primary)]" />
+          <h3 className="mt-4 text-lg font-semibold">{item.title}</h3>
+          <p className="mt-2 text-sm text-[var(--color-muted)]">{item.copy}</p>
         </div>
-        <div className="flex items-start gap-3">
-          <DollarSign className="text-green-600 mt-1 flex-shrink-0" size={20} />
-          <div>
-            <h4 className="font-semibold text-gray-900">Simple Pricing</h4>
-            <p className="text-sm text-gray-600">$10 flat fee, no hidden costs</p>
-          </div>
-        </div>
-        <div className="flex items-start gap-3">
-          <Clock className="text-green-600 mt-1 flex-shrink-0" size={20} />
-          <div>
-            <h4 className="font-semibold text-gray-900">60-Day Listings</h4>
-            <p className="text-sm text-gray-600">Plenty of time to find the right buyer</p>
-          </div>
-        </div>
-      </div>
-    </div>
+      ))}
+    </section>
   )
 }

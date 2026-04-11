@@ -1,80 +1,158 @@
-export interface User {
-  id: string;
-  email: string;
-  full_name?: string;
-  phone?: string;
-  created_at: string;
+export type LandType =
+  | 'residential'
+  | 'commercial'
+  | 'agricultural'
+  | 'recreational'
+  | 'waterfront'
+  | 'riverfront'
+  | 'off_grid'
+  | 'homestead'
+  | 'timber'
+  | 'mineral_rights'
+  | 'mixed_use'
+
+export type ListingStatus =
+  | 'draft'
+  | 'pending_review'
+  | 'active'
+  | 'under_contract'
+  | 'sold'
+  | 'expired'
+  | 'withdrawn'
+
+export type ThemeMode = 'light' | 'dark'
+
+export interface SellerProfile {
+  id: string
+  name: string
+  email: string
+  phone: string
+  verified: boolean
+  successRate: number
+  transactionCount: number
+  responseRate: number
+  responseTime: string
 }
 
-export interface LandListing {
-  id: string;
-  user_id: string;
-  title: string;
-  description: string;
-  price: number;
-  acreage: number;
-  location: string;
-  latitude?: number;
-  longitude?: number;
-  
-  zoning?: string;
-  parcel_number?: string;
-  road_access: 'paved' | 'gravel' | 'trail' | 'none';
-  utilities_water: boolean;
-  utilities_electric: boolean;
-  utilities_sewer: boolean;
-  utilities_gas: boolean;
-  topography: string;
-  land_use_suggestions?: string;
-  property_tax_annual?: number;
-  survey_available: boolean;
-  
-  images: string[];
-  video_url?: string;
-  documents: string[];
-  
-  status: 'pending' | 'active' | 'sold' | 'expired';
-  payment_status: 'unpaid' | 'paid';
-  featured: boolean;
-  featured_until?: string;
-  
-  views: number;
-  created_at: string;
-  updated_at: string;
-  expires_at: string;
-  
-  user?: User;
+export interface DueDiligenceSummary {
+  titleStatus: string
+  surveyStatus: string
+  environmentalStatus: string
+  easements: string
+  liens: string
+  docsReady: string[]
 }
 
-export interface PaymentIntent {
-  id: string;
-  user_id: string;
-  listing_id?: string;
-  amount: number;
-  type: 'listing' | 'featured';
-  stripe_payment_id?: string;
-  status: 'pending' | 'completed' | 'failed';
-  created_at: string;
+export interface NearbyAmenity {
+  label: string
+  distance: string
 }
 
-export interface Message {
-  id: string;
-  listing_id: string;
-  from_user_id: string;
-  to_user_id: string;
-  message: string;
-  read: boolean;
-  created_at: string;
+export interface ParcelDocument {
+  type: string
+  label: string
 }
 
-export interface SearchFilters {
-  minPrice?: number;
-  maxPrice?: number;
-  minAcreage?: number;
-  maxAcreage?: number;
-  location?: string;
-  zoning?: string;
-  roadAccess?: string[];
-  utilities?: string[];
-  sortBy?: 'price_asc' | 'price_desc' | 'acreage_asc' | 'acreage_desc' | 'newest' | 'oldest';
+export interface ParcelMetric {
+  label: string
+  value: string
+}
+
+export interface Parcel {
+  id: string
+  slug: string
+  title: string
+  city: string
+  borough: string
+  region: string
+  address: string
+  gps: string
+  price: number
+  acreage: number
+  landType: LandType
+  zoning: string
+  status: ListingStatus
+  locationLabel: string
+  coordinates: [number, number]
+  boundary: [number, number][]
+  views: number
+  favorites: number
+  featured: boolean
+  verifiedSeller: boolean
+  clearTitle: boolean
+  surveyed: boolean
+  roadAccess: string
+  utilities: string[]
+  features: string[]
+  description: string
+  sellerNotes: string
+  dueDiligence: DueDiligenceSummary
+  nearbyAmenities: NearbyAmenity[]
+  photos: string[]
+  documents: ParcelDocument[]
+  seller: SellerProfile
+  listedAt: string
+  metrics: ParcelMetric[]
+}
+
+export interface BrowseFilters {
+  query: string
+  location: string
+  city: string
+  region: string
+  priceRange: [number, number]
+  acreageRange: [number, number]
+  landTypes: LandType[]
+  features: string[]
+  zoning: string
+  sortBy: 'newest' | 'price_low' | 'price_high' | 'acreage' | 'most_viewed'
+}
+
+export interface MarketPoint {
+  period: string
+  averagePricePerAcre: number
+  averageDaysOnMarket: number
+  closedSales: number
+}
+
+export interface Testimonial {
+  name: string
+  role: string
+  quote: string
+  savings: string
+}
+
+export interface DashboardInquiry {
+  id: string
+  parcelId: string
+  name: string
+  email: string
+  phone: string
+  message: string
+  receivedAt: string
+  status: 'new' | 'responded' | 'scheduled'
+}
+
+export interface DashboardTransaction {
+  id: string
+  parcelId: string
+  buyer: string
+  salePrice: number
+  status: 'escrow_open' | 'title_review' | 'closing_scheduled' | 'closed'
+  escrowCompany: string
+  closingDate: string
+}
+
+export interface SavedSearch {
+  id: string
+  label: string
+  criteria: string
+  alerts: boolean
+}
+
+export interface ToastMessage {
+  id: string
+  title: string
+  description?: string
+  variant?: 'default' | 'success' | 'error'
 }
