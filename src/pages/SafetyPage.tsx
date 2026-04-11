@@ -1,99 +1,64 @@
-import SafetyTips from '../components/SafetyTips'
-import { AlertTriangle, Shield } from 'lucide-react'
+import { AlertTriangle, ShieldCheck } from 'lucide-react'
+import Seo from '../components/Seo'
+
+const warnings = [
+  'Never accept earnest money outside a reputable title and escrow company.',
+  'Verify identity before sharing survey files or scheduling remote property access.',
+  'Use written offers and signed counter-offers so expectations stay clear.',
+  'Avoid wire changes by phone alone; confirm instructions directly with escrow.',
+]
 
 export default function SafetyPage() {
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-      <h1 className="text-4xl font-bold mb-8 flex items-center gap-3">
-        <Shield size={40} className="text-blue-600" />
-        Safety Guidelines
-      </h1>
+    <>
+      <Seo
+        title="Safety & Scam Prevention | Kenai Land Sales"
+        description="Stay safe while buying or selling land with escrow-first closing, identity checks, and scam prevention guidance."
+      />
+      <div className="mx-auto max-w-5xl px-4 py-12 sm:px-6 lg:px-8">
+        <div className="rounded-[36px] border border-white/10 bg-[var(--color-surface)] p-8 lg:p-10">
+          <div className="flex items-center gap-3">
+            <ShieldCheck className="h-10 w-10 text-[var(--color-primary)]" />
+            <div>
+              <p className="text-sm uppercase tracking-[0.3em] text-[var(--color-muted)]">
+                Safety center
+              </p>
+              <h1 className="text-5xl font-semibold">Protect both sides of the sale.</h1>
+            </div>
+          </div>
 
-      <SafetyTips />
+          <div className="mt-8 grid gap-6 md:grid-cols-2">
+            <div className="rounded-[28px] bg-[var(--color-surface-elevated)] p-6">
+              <h2 className="text-2xl font-semibold">Safe showing practices</h2>
+              <ul className="mt-4 space-y-3 text-[var(--color-muted)]">
+                <li>Meet during daylight and share your location with a trusted contact.</li>
+                <li>Confirm parcel corners before inviting buyers onto neighboring land.</li>
+                <li>Use the platform inquiry form before sharing direct cell numbers.</li>
+              </ul>
+            </div>
+            <div className="rounded-[28px] bg-[var(--color-surface-elevated)] p-6">
+              <h2 className="text-2xl font-semibold">Payment security</h2>
+              <ul className="mt-4 space-y-3 text-[var(--color-muted)]">
+                <li>Earnest money belongs with escrow, never with the seller personally.</li>
+                <li>Request proof of funds or lender pre-approval for serious negotiations.</li>
+                <li>Use title insurance and recorded deeds to protect the final transfer.</li>
+              </ul>
+            </div>
+          </div>
 
-      <div className="mt-12 space-y-8">
-        <section>
-          <h2 className="text-2xl font-semibold mb-4">Meeting Safely</h2>
-          <ul className="space-y-3 text-gray-700">
-            <li className="flex items-start gap-3">
-              <span className="text-blue-600 font-bold">•</span>
-              <span>Choose public, well-lit locations for in-person meetings</span>
-            </li>
-            <li className="flex items-start gap-3">
-              <span className="text-blue-600 font-bold">•</span>
-              <span>Bring a friend or family member with you</span>
-            </li>
-            <li className="flex items-start gap-3">
-              <span className="text-blue-600 font-bold">•</span>
-              <span>Meet during daylight hours whenever possible</span>
-            </li>
-            <li className="flex items-start gap-3">
-              <span className="text-blue-600 font-bold">•</span>
-              <span>Tell someone where you're going and when you'll be back</span>
-            </li>
-          </ul>
-        </section>
-
-        <section>
-          <h2 className="text-2xl font-semibold mb-4">Payment Safety</h2>
-          <ul className="space-y-3 text-gray-700">
-            <li className="flex items-start gap-3">
-              <span className="text-blue-600 font-bold">•</span>
-              <span>Never wire money or send gift cards to strangers</span>
-            </li>
-            <li className="flex items-start gap-3">
-              <span className="text-blue-600 font-bold">•</span>
-              <span>Use cash for in-person transactions when possible</span>
-            </li>
-            <li className="flex items-start gap-3">
-              <span className="text-blue-600 font-bold">•</span>
-              <span>Be wary of offers that seem too good to be true</span>
-            </li>
-            <li className="flex items-start gap-3">
-              <span className="text-blue-600 font-bold">•</span>
-              <span>For large purchases, consider using an escrow service</span>
-            </li>
-          </ul>
-        </section>
-
-        <section>
-          <h2 className="text-2xl font-semibold mb-4">Common Scam Warning Signs</h2>
-          <div className="bg-red-50 border border-red-200 rounded-lg p-6">
-            <ul className="space-y-3 text-gray-700">
-              <li className="flex items-start gap-3">
-                <AlertTriangle className="text-red-600 flex-shrink-0 mt-1" size={20} />
-                <span>Seller refuses to meet in person or show the item</span>
-              </li>
-              <li className="flex items-start gap-3">
-                <AlertTriangle className="text-red-600 flex-shrink-0 mt-1" size={20} />
-                <span>Requests payment via wire transfer, gift cards, or cryptocurrency</span>
-              </li>
-              <li className="flex items-start gap-3">
-                <AlertTriangle className="text-red-600 flex-shrink-0 mt-1" size={20} />
-                <span>Offers to ship item before receiving payment</span>
-              </li>
-              <li className="flex items-start gap-3">
-                <AlertTriangle className="text-red-600 flex-shrink-0 mt-1" size={20} />
-                <span>Pressure to act quickly or "opportunity won't last"</span>
-              </li>
-              <li className="flex items-start gap-3">
-                <AlertTriangle className="text-red-600 flex-shrink-0 mt-1" size={20} />
-                <span>Poor grammar, spelling errors, or generic responses</span>
-              </li>
+          <div className="mt-8 rounded-[28px] border border-rose-400/20 bg-rose-950/20 p-6">
+            <div className="flex items-center gap-3">
+              <AlertTriangle className="h-6 w-6 text-rose-300" />
+              <h2 className="text-2xl font-semibold">Red flags to watch</h2>
+            </div>
+            <ul className="mt-4 space-y-3 text-[var(--color-muted)]">
+              {warnings.map((warning) => (
+                <li key={warning}>{warning}</li>
+              ))}
             </ul>
           </div>
-        </section>
-
-        <section>
-          <h2 className="text-2xl font-semibold mb-4">Report Suspicious Activity</h2>
-          <p className="text-gray-700 mb-4">
-            If you encounter a suspicious listing or user, please report it immediately using the "Report Listing" button. We take fraud seriously and will investigate all reports.
-          </p>
-          <button className="bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 font-semibold">
-            Report a Listing
-          </button>
-        </section>
+        </div>
       </div>
-    </div>
+    </>
   )
 }
