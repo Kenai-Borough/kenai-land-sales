@@ -1,0 +1,17 @@
+{
+  "name": "Kenai Land Sales",
+  "short_name": "Kenai Land",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#08110c",
+  "theme_color": "#c48312",
+  "description": "Alaska FSBO land sales with direct-owner trust tools, maps, and closing guidance.",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
