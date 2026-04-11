@@ -1,100 +1,323 @@
-import { Link } from 'react-router-dom'
-import { Search, DollarSign, Shield, TrendingUp } from 'lucide-react'
+import { useMemo, useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import { motion } from 'framer-motion'
+import { ArrowRight, CheckCircle2, MapPinned, Search, ShieldCheck, Trees } from 'lucide-react'
+import PropertyCard from '../components/PropertyCard'
+import Seo from '../components/Seo'
 import TrustBadge from '../components/TrustBadge'
+import { featuredParcels, parcels, testimonials } from '../data/parcels'
+import { formatCurrency, formatNumber } from '../lib/utils'
 
 export default function HomePage() {
+  const navigate = useNavigate()
+  const [location, setLocation] = useState('')
+  const [price, setPrice] = useState('Any price')
+  const [acreage, setAcreage] = useState('Any acreage')
+  const [landType, setLandType] = useState('Any type')
+
+  const stats = useMemo(() => {
+    const soldParcels = parcels.filter((parcel) => parcel.status === 'sold')
+    const acresSold = soldParcels.reduce((sum, parcel) => sum + parcel.acreage, 0)
+    return [
+      { label: 'Parcels listed', value: String(parcels.length) },
+      { label: 'Acres sold', value: `${formatNumber(acresSold, 0)}+` },
+      { label: 'Avg savings', value: '$18.4K' },
+      { label: 'Success rate', value: '98%' },
+    ]
+  }, [])
+
+  const valueProps = [
+    {
+      title: 'Save 6-10% vs broker commissions',
+      copy:
+        'Keep more equity by paying for title, escrow, and optional support only where they truly protect the closing.',
+      icon: Trees,
+    },
+    {
+      title: 'You control the process',
+      copy:
+        'Owners set pricing, answer buyer questions directly, and decide when to negotiate instead of outsourcing every step.',
+      icon: MapPinned,
+    },
+    {
+      title: 'Direct buyer communication',
+      copy:
+        'Maps, docs, trust badges, and contact tools bring serious buyers straight to the owner with fewer layers and less confusion.',
+      icon: ShieldCheck,
+    },
+  ]
+
   return (
-    <div>
-      {/* Hero Section */}
-      <div className="bg-gradient-to-r from-blue-600 to-blue-800 text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-          <h1 className="text-4xl md:text-6xl font-bold mb-6">
-            Find Your Perfect Alaska Land
-          </h1>
-          <p className="text-xl md:text-2xl mb-8 text-blue-100">
-            Browse premium land listings on the Kenai Peninsula. Simple 0 flat fee, trusted platform.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4">
-            <Link
-              to="/browse"
-              className="bg-white text-blue-600 px-8 py-4 rounded-lg font-semibold text-lg hover:bg-gray-100 text-center"
-            >
-              Browse Listings
+    <>
+      <Seo
+        title="Kenai Land Sales | FSBO Land on the Kenai Peninsula"
+        description="Kenai Land Sales helps Alaska landowners sell direct with maps, trust badges, due diligence tools, and escrow-first closing guidance."
+      />
+      <div className="space-y-20 pb-6">
+        <section className="relative overflow-hidden">
+          <div className="absolute inset-0">
+            <img
+              src="https://images.unsplash.com/photo-1511497584788-876760111969?auto=format&fit=crop&w=1800&q=80"
+              alt="Alaska wilderness"
+              className="h-full w-full object-cover"
+            />
+            <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(5,17,12,.88),rgba(10,33,22,.6),rgba(14,24,40,.7))]" />
+          </div>
+          <div className="relative mx-auto grid max-w-7xl gap-10 px-4 py-24 sm:px-6 lg:grid-cols-[1.1fr_.9fr] lg:px-8 lg:py-28">
+            <div className="max-w-3xl">
+              <p className="inline-flex rounded-full border border-white/15 bg-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.35em] text-white/80 backdrop-blur">
+                Owner direct • Kenai Peninsula
+              </p>
+              <h1 className="mt-6 text-5xl font-semibold leading-tight text-white md:text-7xl">
+                Sell your Alaska land with confidence, not commission pressure.
+              </h1>
+              <p className="mt-6 max-w-2xl text-lg leading-8 text-emerald-50/85">
+                Forests, rivers, mountain views, bluff lots, homesteads—Kenai Land Sales gives
+                local owners a trusted FSBO platform built around direct communication, clean due
+                diligence, and safer closings.
+              </p>
+              <div className="mt-8 flex flex-wrap gap-3 text-sm text-white/85">
+                <span className="rounded-full border border-white/15 bg-white/10 px-4 py-2">
+                  Verified seller badges
+                </span>
+                <span className="rounded-full border border-white/15 bg-white/10 px-4 py-2">
+                  Clear title messaging
+                </span>
+                <span className="rounded-full border border-white/15 bg-white/10 px-4 py-2">
+                  Escrow protection guidance
+                </span>
+              </div>
+              <div className="mt-10 flex flex-wrap gap-4">
+                <Link
+                  to="/create-listing"
+                  className="rounded-full bg-[var(--color-primary)] px-6 py-4 text-sm font-semibold text-white shadow-2xl shadow-amber-500/25"
+                >
+                  List Your Land Free
+                </Link>
+                <Link
+                  to="/fsbo-guide"
+                  className="rounded-full border border-white/20 px-6 py-4 text-sm font-semibold text-white backdrop-blur"
+                >
+                  Learn the FSBO process
+                </Link>
+              </div>
+            </div>
+
+            <div className="rounded-[36px] border border-white/10 bg-black/25 p-5 shadow-2xl backdrop-blur-xl">
+              <div className="rounded-[28px] bg-white p-5 text-slate-900">
+                <div className="flex items-center gap-3">
+                  <Search className="h-5 w-5 text-emerald-700" />
+                  <p className="text-sm font-semibold uppercase tracking-[0.35em] text-slate-500">
+                    Find your parcel
+                  </p>
+                </div>
+                <div className="mt-5 grid gap-4">
+                  <input
+                    value={location}
+                    onChange={(event) => setLocation(event.target.value)}
+                    placeholder="Location, city, or borough"
+                    className="rounded-2xl border border-slate-200 px-4 py-3 outline-none ring-0"
+                  />
+                  <div className="grid grid-cols-2 gap-4">
+                    <select
+                      value={price}
+                      onChange={(event) => setPrice(event.target.value)}
+                      className="rounded-2xl border border-slate-200 px-4 py-3"
+                    >
+                      <option>Any price</option>
+                      <option>Under $50K</option>
+                      <option>$50K - $150K</option>
+                      <option>$150K - $300K</option>
+                      <option>$300K+</option>
+                    </select>
+                    <select
+                      value={acreage}
+                      onChange={(event) => setAcreage(event.target.value)}
+                      className="rounded-2xl border border-slate-200 px-4 py-3"
+                    >
+                      <option>Any acreage</option>
+                      <option>Under 2 acres</option>
+                      <option>2 to 10 acres</option>
+                      <option>10 to 40 acres</option>
+                      <option>40+ acres</option>
+                    </select>
+                  </div>
+                  <select
+                    value={landType}
+                    onChange={(event) => setLandType(event.target.value)}
+                    className="rounded-2xl border border-slate-200 px-4 py-3"
+                  >
+                    <option>Any type</option>
+                    <option>Residential</option>
+                    <option>Commercial</option>
+                    <option>Agricultural</option>
+                    <option>Recreational</option>
+                    <option>Waterfront</option>
+                    <option>Riverfront</option>
+                    <option>Off-grid</option>
+                    <option>Homestead</option>
+                    <option>Timber</option>
+                  </select>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      navigate(
+                        '/browse?location=' +
+                          encodeURIComponent(location) +
+                          '&price=' +
+                          encodeURIComponent(price) +
+                          '&acreage=' +
+                          encodeURIComponent(acreage) +
+                          '&type=' +
+                          encodeURIComponent(landType),
+                      )
+                    }
+                    className="inline-flex items-center justify-center gap-2 rounded-2xl bg-emerald-800 px-4 py-4 font-semibold text-white"
+                  >
+                    Search parcels
+                    <ArrowRight className="h-4 w-4" />
+                  </button>
+                </div>
+                <div className="mt-5 grid grid-cols-2 gap-3 text-sm text-slate-600">
+                  <div className="rounded-2xl bg-emerald-50 p-3">
+                    <p className="font-semibold text-slate-900">Average savings</p>
+                    <p>{formatCurrency(18400)} in avoided commission</p>
+                  </div>
+                  <div className="rounded-2xl bg-slate-100 p-3">
+                    <p className="font-semibold text-slate-900">Typical close</p>
+                    <p>30-60 days with title and escrow</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="grid gap-4 md:grid-cols-4">
+            {stats.map((stat, index) => (
+              <motion.div
+                key={stat.label}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.08 }}
+                className="rounded-[28px] border border-white/10 bg-[var(--color-surface)] p-6"
+              >
+                <p className="text-4xl font-semibold text-[var(--color-primary)]">{stat.value}</p>
+                <p className="mt-2 text-sm uppercase tracking-[0.25em] text-[var(--color-muted)]">
+                  {stat.label}
+                </p>
+              </motion.div>
+            ))}
+          </div>
+        </section>
+
+        <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="grid gap-10 lg:grid-cols-[.95fr_1.05fr]">
+            <div className="space-y-6">
+              <p className="text-sm font-semibold uppercase tracking-[0.35em] text-[var(--color-primary)]">
+                Why sell direct
+              </p>
+              <h2 className="text-4xl font-semibold">A trusted path that keeps owners in charge.</h2>
+              <p className="text-lg leading-8 text-[var(--color-muted)]">
+                Brokers can still help with title or escrow, but most landowners do not need to hand
+                over the whole relationship just to market a parcel well.
+              </p>
+              <div className="space-y-4">
+                {[
+                  'Step-by-step Alaska FSBO education',
+                  'Satellite maps, parcel boundaries, and acreage planning tools',
+                  'Verified seller, surveyed, and clear title trust indicators',
+                  'Escrow-first messaging that protects both parties',
+                ].map((item) => (
+                  <div key={item} className="flex items-start gap-3 rounded-3xl bg-[var(--color-surface)] p-4">
+                    <CheckCircle2 className="mt-1 h-5 w-5 text-[var(--color-primary)]" />
+                    <p className="text-[var(--color-muted)]">{item}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-3">
+              {valueProps.map((item) => (
+                <div key={item.title} className="rounded-[32px] bg-[var(--color-surface)] p-6">
+                  <item.icon className="h-10 w-10 text-[var(--color-primary)]" />
+                  <h3 className="mt-5 text-2xl font-semibold">{item.title}</h3>
+                  <p className="mt-3 text-[var(--color-muted)]">{item.copy}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <TrustBadge />
+        </section>
+
+        <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="flex items-end justify-between gap-6">
+            <div>
+              <p className="text-sm font-semibold uppercase tracking-[0.35em] text-[var(--color-primary)]">
+                Featured parcels
+              </p>
+              <h2 className="mt-2 text-4xl font-semibold">Fresh owner-direct opportunities</h2>
+            </div>
+            <Link to="/browse" className="hidden text-sm font-semibold text-[var(--color-primary)] md:block">
+              View all listings →
             </Link>
-            <Link
-              to="/create-listing"
-              className="bg-blue-500 text-white px-8 py-4 rounded-lg font-semibold text-lg hover:bg-blue-400 text-center"
-            >
-              Post a Listing - $10
-            </Link>
           </div>
-        </div>
-      </div>
+          <div className="mt-8 grid gap-6 lg:grid-cols-3">
+            {featuredParcels.map((parcel) => (
+              <PropertyCard key={parcel.id} parcel={parcel} />
+            ))}
+          </div>
+        </section>
 
-      {/* Features Section */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <h2 className="text-3xl font-bold text-center mb-12">Why Choose Our Platform?</h2>
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          <div className="text-center">
-            <div className="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-              <DollarSign className="text-blue-600" size={32} />
+        <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="rounded-[36px] border border-white/10 bg-[var(--color-surface)] p-8 lg:p-10">
+            <div className="grid gap-6 lg:grid-cols-3">
+              {testimonials.map((testimonial) => (
+                <blockquote key={testimonial.name} className="rounded-[28px] bg-[var(--color-surface-elevated)] p-6">
+                  <p className="text-lg leading-8">“{testimonial.quote}”</p>
+                  <footer className="mt-5">
+                    <p className="font-semibold">{testimonial.name}</p>
+                    <p className="text-sm text-[var(--color-muted)]">{testimonial.role}</p>
+                    <p className="mt-2 text-sm font-semibold text-[var(--color-primary)]">
+                      {testimonial.savings}
+                    </p>
+                  </footer>
+                </blockquote>
+              ))}
             </div>
-            <h3 className="text-xl font-semibold mb-2">Simple Pricing</h3>
-            <p className="text-gray-600">$10 flat fee for 60-day listings. Featured upgrades available for $20.</p>
           </div>
-          <div className="text-center">
-            <div className="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Shield className="text-green-600" size={32} />
-            </div>
-            <h3 className="text-xl font-semibold mb-2">Safe & Secure</h3>
-            <p className="text-gray-600">Verified sellers, secure payments, and comprehensive safety guidelines.</p>
-          </div>
-          <div className="text-center">
-            <div className="bg-purple-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Search className="text-purple-600" size={32} />
-            </div>
-            <h3 className="text-xl font-semibold mb-2">Advanced Search</h3>
-            <p className="text-gray-600">Filter by price, location, features, and more to find exactly what you need.</p>
-          </div>
-          <div className="text-center">
-            <div className="bg-orange-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-              <TrendingUp className="text-orange-600" size={32} />
-            </div>
-            <h3 className="text-xl font-semibold mb-2">High Visibility</h3>
-            <p className="text-gray-600">Professional listings with photo galleries, videos, and detailed descriptions.</p>
-          </div>
-        </div>
-      </div>
+        </section>
 
-      {/* Trust Badge */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <TrustBadge />
+        <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="rounded-[40px] border border-amber-500/20 bg-[linear-gradient(135deg,rgba(180,83,9,.12),rgba(5,17,12,.04))] p-8 lg:p-12">
+            <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+              <div>
+                <p className="text-sm font-semibold uppercase tracking-[0.35em] text-[var(--color-primary)]">
+                  Ready to go live?
+                </p>
+                <h2 className="mt-2 text-4xl font-semibold">
+                  Showcase your parcel with the paperwork buyers ask for.
+                </h2>
+                <p className="mt-4 max-w-2xl text-lg text-[var(--color-muted)]">
+                  Start with a free listing, add maps and docs, then guide serious buyers into
+                  escrow with confidence.
+                </p>
+              </div>
+              <Link
+                to="/create-listing"
+                className="inline-flex items-center justify-center gap-2 rounded-full bg-[var(--color-primary)] px-6 py-4 font-semibold text-white"
+              >
+                List Your Land Free
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            </div>
+          </div>
+        </section>
       </div>
-
-      {/* Featured Listings Preview */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <h2 className="text-3xl font-bold mb-8">Featured Land Listings</h2>
-        <div className="text-center text-gray-600">
-          <p>Browse all listings to see available properties</p>
-          <Link to="/browse" className="text-blue-600 hover:underline">View all listings →</Link>
-        </div>
-      </div>
-
-      {/* CTA Section */}
-      <div className="bg-gray-900 text-white mt-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center">
-          <h2 className="text-3xl font-bold mb-4">Ready to Get Started?</h2>
-          <p className="text-xl text-gray-300 mb-8">
-            Join hundreds of satisfied buyers and sellers on Alaska's most trusted platform.
-          </p>
-          <Link
-            to="/create-listing"
-            className="bg-blue-600 text-white px-8 py-4 rounded-lg font-semibold text-lg hover:bg-blue-700 inline-block"
-          >
-            Post Your First Listing - $10
-          </Link>
-        </div>
-      </div>
-    </div>
+    </>
   )
 }

@@ -1,99 +1,101 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import Seo from '../components/Seo'
+import { useToast } from '../context/ToastContext'
 import { signUp } from '../lib/supabase'
 
 export default function SignUpPage() {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [fullName, setFullName] = useState('')
-  const [error, setError] = useState('')
-  const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
+  const { pushToast } = useToast()
+  const [fullName, setFullName] = useState('')
+  const [email, setEmail] = useState('')
+  const [phone, setPhone] = useState('')
+  const [role, setRole] = useState<'buyer' | 'seller'>('seller')
+  const [password, setPassword] = useState('')
+  const [error, setError] = useState('')
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
-    setError('')
-    setLoading(true)
-
-    const { error } = await signUp(email, password, fullName)
-    
-    if (error) {
-      setError(error.message)
-      setLoading(false)
-    } else {
-      alert('Check your email to confirm your account!')
-      navigate('/login')
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault()
+    const { error: authError } = await signUp(email, password, fullName, role, phone)
+    if (authError) {
+      setError(authError.message)
+      return
     }
+    pushToast({
+      title: 'Account created',
+      description: 'Your FSBO dashboard is ready.',
+      variant: 'success',
+    })
+    navigate('/dashboard')
   }
 
   return (
-    <div className="max-w-md mx-auto px-4 py-16">
-      <div className="bg-white rounded-lg shadow-lg p-8">
-        <h1 className="text-3xl font-bold mb-6 text-center">Create Account</h1>
-
-        {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">
-            {error}
-          </div>
-        )}
-
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Full Name
-            </label>
+    <>
+      <Seo
+        title="Create Account | Kenai Land Sales"
+        description="Create a buyer or seller account to publish Alaska land listings, save parcels, manage inquiries, and track closings."
+      />
+      <div className="mx-auto max-w-md px-4 py-16">
+        <div className="rounded-[36px] border border-white/10 bg-[var(--color-surface)] p-8">
+          <p className="text-sm uppercase tracking-[0.3em] text-[var(--color-primary)]">
+            Get started
+          </p>
+          <h1 className="mt-3 text-4xl font-semibold">Create your account</h1>
+          <form onSubmit={handleSubmit} className="mt-8 space-y-4">
             <input
-              type="text"
               required
-              className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               value={fullName}
-              onChange={(e) => setFullName(e.target.value)}
+              onChange={(event) => setFullName(event.target.value)}
+              placeholder="Full name"
+              className="w-full rounded-2xl border border-white/10 bg-[var(--color-surface-elevated)] px-4 py-3"
             />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Email Address
-            </label>
             <input
-              type="email"
               required
-              className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              type="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(event) => setEmail(event.target.value)}
+              placeholder="Email"
+              className="w-full rounded-2xl border border-white/10 bg-[var(--color-surface-elevated)] px-4 py-3"
             />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Password
-            </label>
             <input
-              type="password"
+              value={phone}
+              onChange={(event) => setPhone(event.target.value)}
+              placeholder="Phone"
+              className="w-full rounded-2xl border border-white/10 bg-[var(--color-surface-elevated)] px-4 py-3"
+            />
+            <select
+              value={role}
+              onChange={(event) => setRole(event.target.value as 'buyer' | 'seller')}
+              className="w-full rounded-2xl border border-white/10 bg-[var(--color-surface-elevated)] px-4 py-3"
+            >
+              <option value="seller">Seller</option>
+              <option value="buyer">Buyer</option>
+            </select>
+            <input
               required
               minLength={6}
-              className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              type="password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(event) => setPassword(event.target.value)}
+              placeholder="Password"
+              className="w-full rounded-2xl border border-white/10 bg-[var(--color-surface-elevated)] px-4 py-3"
             />
-          </div>
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 disabled:opacity-50"
-          >
-            {loading ? 'Creating account...' : 'Create Account'}
-          </button>
-        </form>
-
-        <div className="mt-6 text-center text-sm text-gray-600">
-          Already have an account?{' '}
-          <Link to="/login" className="text-blue-600 hover:underline font-semibold">
-            Sign in here
-          </Link>
+            {error ? <p className="text-sm text-rose-300">{error}</p> : null}
+            <button
+              type="submit"
+              className="w-full rounded-full bg-[var(--color-primary)] px-4 py-3 font-semibold text-white"
+            >
+              Create account
+            </button>
+          </form>
+          <p className="mt-6 text-sm text-[var(--color-muted)]">
+            Already have an account?{' '}
+            <Link to="/login" className="font-semibold text-[var(--color-primary)]">
+              Sign in
+            </Link>
+          </p>
         </div>
       </div>
-    </div>
+    </>
   )
 }

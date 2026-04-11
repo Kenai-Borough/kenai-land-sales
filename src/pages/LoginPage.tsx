@@ -1,83 +1,107 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { signIn } from '../lib/supabase'
+import Seo from '../components/Seo'
+import { useToast } from '../context/ToastContext'
+import { resetPassword, signIn } from '../lib/supabase'
 
 export default function LoginPage() {
+  const navigate = useNavigate()
+  const { pushToast } = useToast()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
-  const [loading, setLoading] = useState(false)
-  const navigate = useNavigate()
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
-    setError('')
-    setLoading(true)
-
-    const { error } = await signIn(email, password)
-    
-    if (error) {
-      setError(error.message)
-      setLoading(false)
-    } else {
-      navigate('/dashboard')
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault()
+    const { error: authError } = await signIn(email, password)
+    if (authError) {
+      setError(authError.message)
+      return
     }
+    pushToast({
+      title: 'Signed in',
+      description: 'Your dashboard is ready.',
+      variant: 'success',
+    })
+    navigate('/dashboard')
+  }
+
+  const handleReset = async () => {
+    if (!email) {
+      setError('Enter your email first so we know where to send reset steps.')
+      return
+    }
+    const { error: resetError } = await resetPassword(email)
+    if (resetError) {
+      setError(resetError.message)
+      return
+    }
+    pushToast({
+      title: 'Reset link prepared',
+      description: 'Check your email or use the local demo flow.',
+      variant: 'success',
+    })
   }
 
   return (
-    <div className="max-w-md mx-auto px-4 py-16">
-      <div className="bg-white rounded-lg shadow-lg p-8">
-        <h1 className="text-3xl font-bold mb-6 text-center">Sign In</h1>
-        
-        {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">
-            {error}
-          </div>
-        )}
+    <>
+      <Seo
+        title="Sign In | Kenai Land Sales"
+        description="Access your Kenai Land Sales dashboard, inquiry inbox, saved parcels, and direct-owner land sale tools."
+      />
+      <div className="mx-auto max-w-md px-4 py-16">
+        <div className="rounded-[36px] border border-white/10 bg-[var(--color-surface)] p-8">
+          <p className="text-sm uppercase tracking-[0.3em] text-[var(--color-primary)]">
+            Account access
+          </p>
+          <h1 className="mt-3 text-4xl font-semibold">Sign in</h1>
+          <p className="mt-3 text-[var(--color-muted)]">
+            Seller and buyer dashboards use Supabase auth in production, with a local demo
+            fallback when credentials are not configured.
+          </p>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Email Address
-            </label>
+          <form onSubmit={handleSubmit} className="mt-8 space-y-4">
             <input
               type="email"
               required
-              className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(event) => setEmail(event.target.value)}
+              placeholder="Email"
+              className="w-full rounded-2xl border border-white/10 bg-[var(--color-surface-elevated)] px-4 py-3"
             />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Password
-            </label>
             <input
               type="password"
               required
-              className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(event) => setPassword(event.target.value)}
+              placeholder="Password"
+              className="w-full rounded-2xl border border-white/10 bg-[var(--color-surface-elevated)] px-4 py-3"
             />
-          </div>
+            {error ? <p className="text-sm text-rose-300">{error}</p> : null}
+            <button
+              type="submit"
+              className="w-full rounded-full bg-[var(--color-primary)] px-4 py-3 font-semibold text-white"
+            >
+              Sign in
+            </button>
+          </form>
 
           <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 disabled:opacity-50"
+            type="button"
+            onClick={handleReset}
+            className="mt-4 text-sm font-semibold text-[var(--color-primary)]"
           >
-            {loading ? 'Signing in...' : 'Sign In'}
+            Forgot password?
           </button>
-        </form>
 
-        <div className="mt-6 text-center text-sm text-gray-600">
-          Don't have an account?{' '}
-          <Link to="/signup" className="text-blue-600 hover:underline font-semibold">
-            Sign up here
-          </Link>
+          <p className="mt-6 text-sm text-[var(--color-muted)]">
+            New to the platform?{' '}
+            <Link to="/signup" className="font-semibold text-[var(--color-primary)]">
+              Create your free account
+            </Link>
+          </p>
         </div>
       </div>
-    </div>
+    </>
   )
 }

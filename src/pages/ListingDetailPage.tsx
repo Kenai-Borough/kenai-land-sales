@@ -1,196 +1,407 @@
-import { useState, useEffect } from 'react'
-import { useParams } from 'react-router-dom'
-import { supabase } from '../lib/supabase'
-import { LandListing } from '../types'
-import { formatCurrency, formatDate, calculateDaysRemaining } from '../lib/utils'
-import { MapPin, Maximize2, Check, X, FileText } from 'lucide-react'
-import SafetyTips from '../components/SafetyTips'
+import { useMemo, useState } from 'react'
+import { Link, useParams } from 'react-router-dom'
+import {
+  BadgeCheck,
+  Heart,
+  Mail,
+  MapPin,
+  Phone,
+  Share2,
+  ShieldCheck,
+} from 'lucide-react'
+import Gallery from '../components/Gallery'
+import ParcelMap from '../components/ParcelMap'
+import PropertyCard from '../components/PropertyCard'
+import Seo from '../components/Seo'
+import { parcels } from '../data/parcels'
+import { useToast } from '../context/ToastContext'
+import { useLocalStorage } from '../hooks/useLocalStorage'
+import {
+  createMetaDescription,
+  formatCurrency,
+  formatDate,
+  formatNumber,
+  landTypeLabels,
+  pricePerAcre,
+} from '../lib/utils'
 
 export default function ListingDetailPage() {
   const { id } = useParams()
-  const [listing, setListing] = useState<LandListing | null>(null)
-  const [loading, setLoading] = useState(true)
+  const parcel = parcels.find((item) => item.id === id)
+  const similarParcels = useMemo(
+    () =>
+      parcels
+        .filter(
+          (item) =>
+            item.id !== id &&
+            (item.city === parcel?.city || item.landType === parcel?.landType),
+        )
+        .slice(0, 3),
+    [id, parcel?.city, parcel?.landType],
+  )
+  const [favorites, setFavorites] = useLocalStorage<string[]>('kenai-favorites', [])
+  const [contact, setContact] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    message: parcel
+      ? 'I would like the survey, title summary, and a good time for a property walk.'
+      : '',
+  })
+  const { pushToast } = useToast()
 
-  useEffect(() => {
-    if (id) {
-      fetchListing(id)
-      incrementViews(id)
-    }
-  }, [id])
-
-  async function fetchListing(listingId: string) {
-    const { data, error } = await supabase
-      .from('land_listings')
-      .select('*')
-      .eq('id', listingId)
-      .single()
-
-    if (!error && data) {
-      setListing(data)
-    }
-    setLoading(false)
+  if (!parcel) {
+    return (
+      <div className="mx-auto max-w-4xl px-4 py-24 text-center sm:px-6 lg:px-8">
+        <h1 className="text-4xl font-semibold">Parcel not found</h1>
+        <p className="mt-4 text-[var(--color-muted)]">
+          Try browsing active Kenai Peninsula owner-direct listings.
+        </p>
+        <Link
+          to="/browse"
+          className="mt-8 inline-flex rounded-full bg-[var(--color-primary)] px-5 py-3 font-semibold text-white"
+        >
+          Browse listings
+        </Link>
+      </div>
+    )
   }
 
-  async function incrementViews(listingId: string) {
-    await supabase.rpc('increment_listing_views', {
-      listing_id: listingId,
-      listing_type: 'land'
+  const isFavorite = favorites.includes(parcel.id)
+  const toggleFavorite = () =>
+    setFavorites((current) =>
+      current.includes(parcel.id)
+        ? current.filter((item) => item !== parcel.id)
+        : [...current, parcel.id],
+    )
+
+  const shareParcel = async () => {
+    await navigator.clipboard.writeText(window.location.href)
+    pushToast({
+      title: 'Parcel link copied',
+      description: 'Share it with a buyer, partner, or title company.',
+      variant: 'success',
     })
   }
 
-  if (loading) {
-    return <div className="max-w-7xl mx-auto px-4 py-16 text-center">Loading...</div>
+  const submitInquiry = (event: React.FormEvent) => {
+    event.preventDefault()
+    pushToast({
+      title: 'Inquiry sent to seller',
+      description: 'Expect a reply ' + parcel.seller.responseTime + '.',
+      variant: 'success',
+    })
   }
-
-  if (!listing) {
-    return <div className="max-w-7xl mx-auto px-4 py-16 text-center">Listing not found</div>
-  }
-
-  const daysRemaining = calculateDaysRemaining(listing.expires_at)
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2">
-          {/* Images */}
-          <div className="bg-gray-200 aspect-video rounded-lg mb-6">
-            {listing.images[0] ? (
-              <img src={listing.images[0]} alt={listing.title} className="w-full h-full object-cover rounded-lg" />
-            ) : (
-              <div className="flex items-center justify-center h-full text-gray-400">No image available</div>
-            )}
-          </div>
-
-          {/* Title and Price */}
-          <div className="mb-6">
-            {listing.featured && (
-              <span className="inline-block bg-yellow-500 text-white px-3 py-1 rounded-full text-sm font-semibold mb-2">
-                ⭐ Featured Listing
-              </span>
-            )}
-            <h1 className="text-3xl md:text-4xl font-bold mb-4">{listing.title}</h1>
-            <div className="flex items-center gap-4 text-lg text-gray-600 mb-4">
-              <span className="flex items-center gap-2">
-                <MapPin size={20} />
-                {listing.location}
-              </span>
-              <span className="flex items-center gap-2">
-                <Maximize2 size={20} />
-                {listing.acreage} acres
-              </span>
-            </div>
-            <p className="text-4xl font-bold text-blue-600">{formatCurrency(listing.price)}</p>
-          </div>
-
-          {/* Description */}
-          <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-            <h2 className="text-2xl font-semibold mb-4">Description</h2>
-            <p className="text-gray-700 whitespace-pre-line">{listing.description}</p>
-          </div>
-
-          {/* Property Details */}
-          <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-            <h2 className="text-2xl font-semibold mb-4">Property Details</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {listing.zoning && (
-                <div className="border-b pb-3">
-                  <span className="text-gray-600">Zoning:</span>
-                  <span className="font-semibold ml-2">{listing.zoning}</span>
-                </div>
-              )}
-              {listing.parcel_number && (
-                <div className="border-b pb-3">
-                  <span className="text-gray-600">Parcel Number:</span>
-                  <span className="font-semibold ml-2">{listing.parcel_number}</span>
-                </div>
-              )}
-              <div className="border-b pb-3">
-                <span className="text-gray-600">Road Access:</span>
-                <span className="font-semibold ml-2 capitalize">{listing.road_access}</span>
-              </div>
-              {listing.topography && (
-                <div className="border-b pb-3">
-                  <span className="text-gray-600">Topography:</span>
-                  <span className="font-semibold ml-2">{listing.topography}</span>
-                </div>
-              )}
-              {listing.property_tax_annual && (
-                <div className="border-b pb-3">
-                  <span className="text-gray-600">Annual Tax:</span>
-                  <span className="font-semibold ml-2">{formatCurrency(listing.property_tax_annual)}</span>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Utilities */}
-          <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-            <h2 className="text-2xl font-semibold mb-4">Available Utilities</h2>
-            <div className="grid grid-cols-2 gap-3">
-              <div className="flex items-center gap-2">
-                {listing.utilities_water ? <Check className="text-green-600" /> : <X className="text-gray-400" />}
-                <span>Water</span>
-              </div>
-              <div className="flex items-center gap-2">
-                {listing.utilities_electric ? <Check className="text-green-600" /> : <X className="text-gray-400" />}
-                <span>Electric</span>
-              </div>
-              <div className="flex items-center gap-2">
-                {listing.utilities_sewer ? <Check className="text-green-600" /> : <X className="text-gray-400" />}
-                <span>Sewer</span>
-              </div>
-              <div className="flex items-center gap-2">
-                {listing.utilities_gas ? <Check className="text-green-600" /> : <X className="text-gray-400" />}
-                <span>Gas</span>
-              </div>
-            </div>
-          </div>
-
-          {listing.land_use_suggestions && (
-            <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-              <h2 className="text-2xl font-semibold mb-4">Land Use Suggestions</h2>
-              <p className="text-gray-700">{listing.land_use_suggestions}</p>
-            </div>
-          )}
-
-          <SafetyTips />
+    <>
+      <Seo
+        title={parcel.title + ' | Kenai Land Sales'}
+        description={createMetaDescription(parcel.description)}
+        image={parcel.photos[0]}
+        schema={{
+          '@context': 'https://schema.org',
+          '@type': 'Product',
+          name: parcel.title,
+          description: parcel.description,
+          brand: 'Kenai Land Sales',
+          image: parcel.photos,
+          offers: {
+            '@type': 'Offer',
+            priceCurrency: 'USD',
+            price: parcel.price,
+            availability: 'https://schema.org/InStock',
+          },
+          areaServed: parcel.city + ', Alaska',
+        }}
+      />
+      <div className="mx-auto max-w-7xl space-y-8 px-4 py-10 sm:px-6 lg:px-8">
+        <div className="flex flex-wrap items-center gap-3">
+          <span className="rounded-full bg-[var(--color-surface-elevated)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-[var(--color-muted)]">
+            {landTypeLabels[parcel.landType]}
+          </span>
+          {parcel.verifiedSeller ? (
+            <span className="inline-flex items-center gap-2 rounded-full bg-emerald-900/70 px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-emerald-100">
+              <BadgeCheck className="h-4 w-4" />
+              Verified seller
+            </span>
+          ) : null}
+          {parcel.clearTitle ? (
+            <span className="inline-flex items-center gap-2 rounded-full bg-slate-900/70 px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-white">
+              <ShieldCheck className="h-4 w-4" />
+              Clear title path
+            </span>
+          ) : null}
         </div>
 
-        {/* Sidebar */}
-        <div className="lg:col-span-1">
-          <div className="bg-white rounded-lg shadow-lg p-6 sticky top-24">
-            <h3 className="text-xl font-semibold mb-4">Contact Seller</h3>
-            <button className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 mb-3">
-              Send Message
-            </button>
-            <button className="w-full bg-gray-100 text-gray-800 py-3 rounded-lg font-semibold hover:bg-gray-200">
-              Save Listing
-            </button>
+        <div className="grid gap-8 xl:grid-cols-[1.12fr_.88fr]">
+          <div className="space-y-8">
+            <div>
+              <h1 className="text-4xl font-semibold md:text-5xl">{parcel.title}</h1>
+              <div className="mt-4 flex flex-wrap items-center gap-4 text-[var(--color-muted)]">
+                <span className="inline-flex items-center gap-2">
+                  <MapPin className="h-4 w-4 text-[var(--color-primary)]" />
+                  {parcel.locationLabel}
+                </span>
+                <span>Listed {formatDate(parcel.listedAt)}</span>
+                <span>{parcel.views} views</span>
+              </div>
+            </div>
 
-            <div className="mt-6 pt-6 border-t">
-              <div className="text-sm text-gray-600 space-y-2">
-                <p>Posted: {formatDate(listing.created_at)}</p>
-                <p>Views: {listing.views}</p>
-                <p className="text-orange-600 font-semibold">
-                  {daysRemaining} days remaining
+            <Gallery photos={parcel.photos} title={parcel.title} />
+
+            <div className="grid gap-4 md:grid-cols-4">
+              <div className="rounded-[28px] bg-[var(--color-surface)] p-5">
+                <p className="text-sm uppercase tracking-[0.25em] text-[var(--color-muted)]">
+                  Price
                 </p>
-                {listing.survey_available && (
-                  <p className="flex items-center gap-2 text-green-600">
-                    <FileText size={16} />
-                    Survey Available
+                <p className="mt-2 text-3xl font-semibold">{formatCurrency(parcel.price)}</p>
+              </div>
+              <div className="rounded-[28px] bg-[var(--color-surface)] p-5">
+                <p className="text-sm uppercase tracking-[0.25em] text-[var(--color-muted)]">
+                  Acreage
+                </p>
+                <p className="mt-2 text-3xl font-semibold">{formatNumber(parcel.acreage)} acres</p>
+              </div>
+              <div className="rounded-[28px] bg-[var(--color-surface)] p-5">
+                <p className="text-sm uppercase tracking-[0.25em] text-[var(--color-muted)]">
+                  Price / acre
+                </p>
+                <p className="mt-2 text-3xl font-semibold">
+                  {formatCurrency(pricePerAcre(parcel.price, parcel.acreage))}
+                </p>
+              </div>
+              <div className="rounded-[28px] bg-[var(--color-surface)] p-5">
+                <p className="text-sm uppercase tracking-[0.25em] text-[var(--color-muted)]">
+                  Zoning
+                </p>
+                <p className="mt-2 text-xl font-semibold">{parcel.zoning}</p>
+              </div>
+            </div>
+
+            <div className="rounded-[32px] bg-[var(--color-surface)] p-8">
+              <h2 className="text-3xl font-semibold">Property overview</h2>
+              <p className="mt-4 text-lg leading-8 text-[var(--color-muted)]">
+                {parcel.description}
+              </p>
+              <p className="mt-4 rounded-3xl bg-[var(--color-surface-elevated)] p-5 text-[var(--color-muted)]">
+                <span className="font-semibold text-[var(--color-text)]">Seller’s notes:</span>{' '}
+                {parcel.sellerNotes}
+              </p>
+            </div>
+
+            <div className="grid gap-6 lg:grid-cols-2">
+              <div className="rounded-[32px] bg-[var(--color-surface)] p-8">
+                <h2 className="text-2xl font-semibold">Features checklist</h2>
+                <div className="mt-5 grid gap-3 sm:grid-cols-2">
+                  {parcel.features.map((feature) => (
+                    <div
+                      key={feature}
+                      className="rounded-2xl bg-[var(--color-surface-elevated)] px-4 py-3 text-sm capitalize text-[var(--color-muted)]"
+                    >
+                      {feature}
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div className="rounded-[32px] bg-[var(--color-surface)] p-8">
+                <h2 className="text-2xl font-semibold">Utilities and access</h2>
+                <div className="mt-5 space-y-3">
+                  <p className="rounded-2xl bg-[var(--color-surface-elevated)] px-4 py-3 text-sm text-[var(--color-muted)]">
+                    <span className="font-semibold text-[var(--color-text)]">Road access:</span>{' '}
+                    {parcel.roadAccess}
                   </p>
+                  {parcel.utilities.map((item) => (
+                    <p
+                      key={item}
+                      className="rounded-2xl bg-[var(--color-surface-elevated)] px-4 py-3 text-sm text-[var(--color-muted)]"
+                    >
+                      {item}
+                    </p>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div className="rounded-[32px] bg-[var(--color-surface)] p-8">
+              <h2 className="text-2xl font-semibold">Due diligence center</h2>
+              <div className="mt-5 grid gap-4 md:grid-cols-2">
+                {Object.entries(parcel.dueDiligence).map(([key, value]) =>
+                  key === 'docsReady' ? null : (
+                    <div key={key} className="rounded-2xl bg-[var(--color-surface-elevated)] p-4">
+                      <p className="text-sm uppercase tracking-[0.25em] text-[var(--color-muted)]">
+                        {key.replace(/([A-Z])/g, ' $1')}
+                      </p>
+                      <p className="mt-2 text-sm leading-6 text-[var(--color-text)]">
+                        {String(value)}
+                      </p>
+                    </div>
+                  ),
                 )}
               </div>
+              <div className="mt-5 flex flex-wrap gap-2">
+                {parcel.dueDiligence.docsReady.map((doc) => (
+                  <span
+                    key={doc}
+                    className="rounded-full bg-emerald-900/60 px-4 py-2 text-sm text-emerald-100"
+                  >
+                    {doc}
+                  </span>
+                ))}
+              </div>
             </div>
 
-            <div className="mt-6 pt-6 border-t">
-              <button className="text-red-600 text-sm hover:underline">
-                Report this listing
-              </button>
+            <div className="rounded-[32px] bg-[var(--color-surface)] p-8">
+              <h2 className="text-2xl font-semibold">Parcel map and boundaries</h2>
+              <p className="mt-3 text-[var(--color-muted)]">
+                Satellite imagery with owner-provided boundary overlay helps buyers
+                validate access, terrain, and neighboring land uses before a tour.
+              </p>
+              <div className="mt-6">
+                <ParcelMap parcels={[parcel]} focusParcelId={parcel.id} />
+              </div>
             </div>
           </div>
+
+          <aside className="space-y-6">
+            <div className="sticky top-24 rounded-[32px] border border-white/10 bg-[var(--color-surface)] p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm uppercase tracking-[0.3em] text-[var(--color-muted)]">
+                    Seller trust
+                  </p>
+                  <h2 className="mt-2 text-2xl font-semibold">{parcel.seller.name}</h2>
+                </div>
+                <div className="rounded-2xl bg-[var(--color-surface-elevated)] px-3 py-2 text-sm text-[var(--color-muted)]">
+                  {parcel.seller.successRate}% success
+                </div>
+              </div>
+
+              <div className="mt-4 grid grid-cols-2 gap-3 text-sm">
+                <div className="rounded-2xl bg-[var(--color-surface-elevated)] p-3">
+                  <p className="text-[var(--color-muted)]">Transactions</p>
+                  <p className="mt-1 text-xl font-semibold">{parcel.seller.transactionCount}</p>
+                </div>
+                <div className="rounded-2xl bg-[var(--color-surface-elevated)] p-3">
+                  <p className="text-[var(--color-muted)]">Response rate</p>
+                  <p className="mt-1 text-xl font-semibold">{parcel.seller.responseRate}%</p>
+                </div>
+              </div>
+
+              <div className="mt-5 flex gap-3">
+                <button
+                  type="button"
+                  onClick={toggleFavorite}
+                  className="inline-flex flex-1 items-center justify-center gap-2 rounded-full border border-white/10 px-4 py-3 font-semibold"
+                >
+                  <Heart className={isFavorite ? 'h-4 w-4 fill-current text-rose-400' : 'h-4 w-4'} />
+                  Save
+                </button>
+                <button
+                  type="button"
+                  onClick={shareParcel}
+                  className="inline-flex flex-1 items-center justify-center gap-2 rounded-full bg-[var(--color-primary)] px-4 py-3 font-semibold text-white"
+                >
+                  <Share2 className="h-4 w-4" />
+                  Share
+                </button>
+              </div>
+
+              <form onSubmit={submitInquiry} className="mt-6 space-y-3">
+                <h3 className="text-xl font-semibold">Contact seller</h3>
+                <input
+                  value={contact.name}
+                  onChange={(event) =>
+                    setContact((current) => ({ ...current, name: event.target.value }))
+                  }
+                  placeholder="Your name"
+                  className="w-full rounded-2xl border border-white/10 bg-[var(--color-surface-elevated)] px-4 py-3"
+                />
+                <input
+                  value={contact.email}
+                  onChange={(event) =>
+                    setContact((current) => ({ ...current, email: event.target.value }))
+                  }
+                  placeholder="Email"
+                  className="w-full rounded-2xl border border-white/10 bg-[var(--color-surface-elevated)] px-4 py-3"
+                />
+                <input
+                  value={contact.phone}
+                  onChange={(event) =>
+                    setContact((current) => ({ ...current, phone: event.target.value }))
+                  }
+                  placeholder="Phone"
+                  className="w-full rounded-2xl border border-white/10 bg-[var(--color-surface-elevated)] px-4 py-3"
+                />
+                <textarea
+                  rows={4}
+                  value={contact.message}
+                  onChange={(event) =>
+                    setContact((current) => ({ ...current, message: event.target.value }))
+                  }
+                  className="w-full rounded-2xl border border-white/10 bg-[var(--color-surface-elevated)] px-4 py-3"
+                />
+                <button
+                  type="submit"
+                  className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-[var(--color-primary)] px-4 py-3 font-semibold text-white"
+                >
+                  <Mail className="h-4 w-4" />
+                  Send inquiry
+                </button>
+              </form>
+
+              <div className="mt-5 rounded-3xl bg-[var(--color-surface-elevated)] p-5 text-sm text-[var(--color-muted)]">
+                <p className="font-semibold text-[var(--color-text)]">
+                  Escrow protection reminder
+                </p>
+                <p className="mt-2">
+                  Serious buyers should use a title and escrow company for earnest
+                  money, payoff coordination, and deed recording.
+                </p>
+                <div className="mt-4 space-y-2">
+                  <p className="inline-flex items-center gap-2">
+                    <Mail className="h-4 w-4 text-[var(--color-primary)]" />
+                    {parcel.seller.email}
+                  </p>
+                  <p className="inline-flex items-center gap-2">
+                    <Phone className="h-4 w-4 text-[var(--color-primary)]" />
+                    {parcel.seller.phone}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="rounded-[32px] bg-[var(--color-surface)] p-6">
+              <h3 className="text-xl font-semibold">Nearby amenities</h3>
+              <div className="mt-4 space-y-3">
+                {parcel.nearbyAmenities.map((amenity) => (
+                  <div
+                    key={amenity.label}
+                    className="flex items-center justify-between rounded-2xl bg-[var(--color-surface-elevated)] px-4 py-3"
+                  >
+                    <span>{amenity.label}</span>
+                    <span className="text-[var(--color-muted)]">{amenity.distance}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </aside>
         </div>
+
+        <section className="space-y-6">
+          <div>
+            <p className="text-sm uppercase tracking-[0.3em] text-[var(--color-muted)]">
+              Similar parcels
+            </p>
+            <h2 className="mt-2 text-3xl font-semibold">More owner-direct opportunities</h2>
+          </div>
+          <div className="grid gap-6 lg:grid-cols-3">
+            {similarParcels.map((item) => (
+              <PropertyCard key={item.id} parcel={item} compact />
+            ))}
+          </div>
+        </section>
       </div>
-    </div>
+    </>
   )
 }
