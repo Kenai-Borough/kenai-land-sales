@@ -33,6 +33,7 @@ const DMCA = lazy(() => import('./pages/legal/DMCA'))
 const AcceptableUse = lazy(() => import('./pages/legal/AcceptableUse'))
 const RealEstateDisclaimer = lazy(() => import('./pages/legal/RealEstateDisclaimer'))
 const FairHousing = lazy(() => import('./pages/legal/FairHousing'))
+const EscrowTransactionPage = lazy(() => import('./pages/EscrowTransactionPage'))
 
 const withTransition = function (element: ReactNode) { return <PageTransition>{element}</PageTransition> }
 
@@ -70,6 +71,8 @@ function AppRoutes() {
             <Route path="/due-diligence" element={withTransition(<DueDiligence />)} />
             <Route path="/market-data" element={withTransition(<MarketData />)} />
             <Route path="/closing-process" element={withTransition(<ClosingProcess />)} />
+            <Route path="/escrow/:id" element={withTransition(<ProtectedRoute><EscrowTransactionPage /></ProtectedRoute>)} />
+            <Route path="/escrow/demo" element={withTransition(<EscrowTransactionPage />)} />
             <Route path="/admin" element={withTransition(<AdminRoute><AdminDashboard /></AdminRoute>)} />
             <Route path="/admin/dashboard" element={withTransition(<AdminRoute><AdminDashboard /></AdminRoute>)} />
             <Route path="/terms" element={withTransition(<TermsOfService />)} />

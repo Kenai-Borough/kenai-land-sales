@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@stripe/react-stripe-js": "^6.1.0",
     "@stripe/stripe-js": "^5.3.0",
     "@supabase/supabase-js": "^2.49.2",
     "date-fns": "^4.1.0",
