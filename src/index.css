@@ -43,6 +43,26 @@ a {
   text-decoration: none;
 }
 
+a,
+button,
+input,
+select,
+textarea,
+[role='button'],
+[tabindex]:not([tabindex='-1']) {
+  outline: none;
+}
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[role='button']:focus-visible,
+[tabindex]:not([tabindex='-1']):focus-visible {
+  box-shadow: 0 0 0 2px rgba(196, 131, 18, 0.9), 0 0 0 4px rgba(8, 17, 12, 0.95);
+}
+
 button,
 input,
 select,

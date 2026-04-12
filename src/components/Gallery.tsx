@@ -39,6 +39,9 @@ export default function Gallery({ photos, title }: GalleryProps) {
                 <img
                   src={photo}
                   alt={title + ' image ' + (index + 1)}
+                  loading="lazy"
+                  width="1600"
+                  height="1067"
                   className="h-[28rem] w-full object-cover"
                 />
               </button>
@@ -56,6 +59,9 @@ export default function Gallery({ photos, title }: GalleryProps) {
               <img
                 src={photo}
                 alt={title + ' thumbnail ' + (index + 1)}
+                loading="lazy"
+                width="800"
+                height="533"
                 className="h-24 w-full object-cover"
               />
             </button>
@@ -75,6 +81,7 @@ export default function Gallery({ photos, title }: GalleryProps) {
               type="button"
               className="absolute right-6 top-6 rounded-full border border-white/20 p-3 text-white"
               onClick={() => setIsOpen(false)}
+              aria-label="Close gallery"
             >
               <X className="h-5 w-5" />
             </button>
@@ -82,18 +89,23 @@ export default function Gallery({ photos, title }: GalleryProps) {
               type="button"
               className="absolute left-6 rounded-full border border-white/20 p-3 text-white"
               onClick={() => setSelected((current) => (current - 1 + photos.length) % photos.length)}
+              aria-label="Show previous image"
             >
               <ChevronLeft className="h-5 w-5" />
             </button>
             <img
               src={photos[selected]}
               alt={title + ' enlarged image'}
+              loading="lazy"
+              width="1600"
+              height="1067"
               className="max-h-[85vh] max-w-[85vw] rounded-3xl object-cover"
             />
             <button
               type="button"
               className="absolute right-6 rounded-full border border-white/20 p-3 text-white"
               onClick={() => setSelected((current) => (current + 1) % photos.length)}
+              aria-label="Show next image"
             >
               <ChevronRight className="h-5 w-5" />
             </button>

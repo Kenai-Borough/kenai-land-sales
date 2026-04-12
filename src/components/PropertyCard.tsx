@@ -22,6 +22,9 @@ export default function PropertyCard({
         <img
           src={parcel.photos[0]}
           alt={parcel.title}
+          loading="lazy"
+          width="1400"
+          height="900"
           className="h-full w-full object-cover transition duration-700 hover:scale-105"
         />
         <div className="absolute inset-x-0 top-0 flex items-center justify-between p-4">

@@ -1,0 +1,23 @@
+{
+  "name": "Kenai Land Sales",
+  "short_name": "Kenai Land",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#08110c",
+  "theme_color": "#183424",
+  "description": "Owner-direct land marketplace with due diligence and closing guidance for Alaska acreage.",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/og-image.svg",
+      "sizes": "1200x630",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

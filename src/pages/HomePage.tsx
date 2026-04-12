@@ -88,7 +88,7 @@ export default function HomePage() {
       <div className="space-y-20 pb-6">
         <section className="relative overflow-hidden">
           <div className="absolute inset-0">
-            <img src="/hero-illustration.svg" alt="" aria-hidden="true" className="h-full w-full object-cover opacity-90" />
+            <img src="/hero-illustration.svg" alt="" aria-hidden="true" loading="lazy" width="1600" height="900" className="h-full w-full object-cover opacity-90" />
             <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(5,17,12,.88),rgba(10,33,22,.62),rgba(14,24,40,.72))]" />
           </div>
           <div className="relative mx-auto grid max-w-7xl gap-10 px-4 py-24 sm:px-6 lg:grid-cols-[1.1fr_.9fr] lg:px-8 lg:py-28">
