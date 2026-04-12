@@ -20,6 +20,8 @@ import {
 import { useToast } from '../context/ToastContext'
 import { getCurrentUser } from '../lib/supabase'
 import { formatCurrency, formatDate } from '../lib/utils'
+import { emailService } from '../lib/email'
+import { emailTemplates } from '../lib/email-templates'
 
 const sellerStatuses = ['active', 'pending_review', 'sold', 'expired'] as const
 
@@ -222,11 +224,20 @@ export default function DashboardPage() {
                       <button
                         type="button"
                         onClick={() =>
-                          pushToast({
-                            title: 'Reply queued',
-                            description: `Your response to ${inquiry.name} is ready to send.`,
-                            variant: 'success',
-                          })
+                          void (async () => {
+                            const draft = replyDrafts[inquiry.id] ?? ''
+                            if (!draft.trim()) {
+                              pushToast({ title: 'Add a reply', description: 'Write a reply before sending the email.', variant: 'error' })
+                              return
+                            }
+                            const email = emailTemplates.messageNotification({ conversationLabel: 'Parcel inquiry', senderName: 'Kenai Land Sales', messageSnippet: draft, replyUrl: `${window.location.origin}/dashboard` })
+                            const result = await emailService.send({ to: inquiry.email, ...email, metadata: { notificationType: 'dashboard-reply', inquiryId: inquiry.id } })
+                            pushToast({
+                              title: result.queued ? 'Reply queued' : 'Reply sent',
+                              description: result.queued ? 'Message sent (email notification may be delayed).' : `Your response to ${inquiry.name} is on the way.`,
+                              variant: 'success',
+                            })
+                          })()
                         }
                         className="mt-3 rounded-full bg-[var(--color-primary)] px-4 py-2 text-sm font-semibold text-white"
                       >

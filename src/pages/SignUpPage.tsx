@@ -3,6 +3,8 @@ import { Link, useNavigate } from 'react-router-dom'
 import Seo from '../components/Seo'
 import { useToast } from '../context/ToastContext'
 import { signUp } from '../lib/supabase'
+import { emailService } from '../lib/email'
+import { emailTemplates } from '../lib/email-templates'
 
 export default function SignUpPage() {
   const navigate = useNavigate()
@@ -21,9 +23,11 @@ export default function SignUpPage() {
       setError(authError.message)
       return
     }
+    const welcome = emailTemplates.welcomeEmail({ recipientName: fullName || 'there', dashboardUrl: `${window.location.origin}/dashboard` })
+    const result = await emailService.send({ to: email, ...welcome, metadata: { notificationType: 'welcome-email', userRole: role } })
     pushToast({
       title: 'Account created',
-      description: 'Your FSBO dashboard is ready.',
+      description: result.queued ? 'Your dashboard is ready. Email delivery may be delayed.' : 'Your FSBO dashboard is ready.',
       variant: 'success',
     })
     navigate('/dashboard')

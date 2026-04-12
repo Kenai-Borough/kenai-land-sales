@@ -5,6 +5,8 @@ import AcreageDrawMap from '../components/AcreageDrawMap'
 import Seo from '../components/Seo'
 import { cities, marketDataByArea } from '../data/parcels'
 import { useToast } from '../context/ToastContext'
+import { emailService } from '../lib/email'
+import { emailTemplates } from '../lib/email-templates'
 import { formatCurrency, formatNumber } from '../lib/utils'
 
 const steps = [
@@ -51,10 +53,12 @@ export default function CreateListingPage() {
   const updateForm = <Key extends keyof typeof form>(key: Key, value: (typeof form)[Key]) =>
     setForm((current) => ({ ...current, [key]: value }))
 
-  const publishListing = () => {
+  const publishListing = async () => {
+    const listingEmail = emailTemplates.eventSubmissionConfirmation({ eventName: form.address || `${form.city} parcel draft`, dashboardUrl: `${window.location.origin}/dashboard` })
+    const result = await emailService.send({ to: 'hello@kenailandsales.com', ...listingEmail, subject: `Listing draft created: ${form.address || form.city}`, metadata: { notificationType: 'listing-created', city: form.city } })
     pushToast({
       title: 'Listing draft published',
-      description: 'Your seller dashboard now shows the parcel as pending review.',
+      description: result.queued ? 'Your seller dashboard is updated. Email delivery may be delayed.' : 'Your seller dashboard now shows the parcel as pending review.',
       variant: 'success',
     })
     navigate('/dashboard')

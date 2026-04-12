@@ -16,6 +16,8 @@ import Seo from '../components/Seo'
 import { parcels } from '../data/parcels'
 import { useToast } from '../context/ToastContext'
 import { useLocalStorage } from '../hooks/useLocalStorage'
+import { emailService } from '../lib/email'
+import { emailTemplates } from '../lib/email-templates'
 import {
   createMetaDescription,
   formatCurrency,
@@ -84,11 +86,28 @@ export default function ListingDetailPage() {
     })
   }
 
-  const submitInquiry = (event: React.FormEvent) => {
+  const submitInquiry = async (event: React.FormEvent) => {
     event.preventDefault()
+    const ownerEmail = emailTemplates.propertyInquiry({
+      propertyTitle: parcel.title,
+      buyerName: contact.name || 'Interested buyer',
+      buyerEmail: contact.email || 'notifications@kenailandsales.com',
+      buyerPhone: contact.phone,
+      message: contact.message,
+      propertyUrl: window.location.href,
+    })
+    const buyerEmail = emailTemplates.inquiryConfirmation({
+      recipientName: contact.name || 'there',
+      listingTitle: parcel.title,
+      detailUrl: window.location.href,
+    })
+    const results = await Promise.all([
+      emailService.send({ to: parcel.seller.email, replyTo: contact.email || undefined, ...ownerEmail, metadata: { notificationType: 'parcel-inquiry', parcelId: parcel.id } }),
+      contact.email ? emailService.send({ to: contact.email, ...buyerEmail, metadata: { notificationType: 'parcel-inquiry-confirmation', parcelId: parcel.id } }) : Promise.resolve({ queued: false }),
+    ])
     pushToast({
       title: 'Inquiry sent to seller',
-      description: 'Expect a reply ' + parcel.seller.responseTime + '.',
+      description: results.some((result) => result.queued) ? 'Message sent (email notification may be delayed).' : 'Expect a reply ' + parcel.seller.responseTime + '.',
       variant: 'success',
     })
   }
