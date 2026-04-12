@@ -7,8 +7,39 @@ import Seo from '../components/Seo'
 import TrustBadge from '../components/TrustBadge'
 import { featuredParcels, parcels, testimonials } from '../data/parcels'
 import { formatCurrency, formatNumber } from '../lib/utils'
+import { CrossTrafficAds } from '../components/CrossTrafficAds'
 
 export default function HomePage() {
+  const homeSchema = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "RealEstateAgent",
+        "name": "Kenai Land Sales",
+        "url": "https://kenailandsales.com",
+        "areaServed": "Kenai Peninsula Borough, Alaska",
+        "description": "Owner-direct land marketplace with due diligence and closing guidance for Alaska acreage."
+      },
+      {
+        "@type": "Product",
+        "name": "Kenai Land Listings",
+        "category": "Land for Sale",
+        "brand": "Kenai Land Sales",
+        "url": "https://kenailandsales.com/browse",
+        "offers": {
+          "@type": "AggregateOffer",
+          "priceCurrency": "USD",
+          "availability": "https://schema.org/InStock"
+        }
+      },
+      {
+        "@type": "WebSite",
+        "name": "Kenai Land Sales",
+        "url": "https://kenailandsales.com"
+      }
+    ]
+  }
+
   const navigate = useNavigate()
   const [location, setLocation] = useState('')
   const [price, setPrice] = useState('Any price')
@@ -50,8 +81,9 @@ export default function HomePage() {
   return (
     <>
       <Seo
-        title="Kenai Land Sales | FSBO Land on the Kenai Peninsula"
-        description="Kenai Land Sales helps Alaska landowners sell direct with maps, trust badges, due diligence tools, and escrow-first closing guidance."
+        title="Kenai Land Sales | Kenai Peninsula, Alaska"
+        description="Shop and list Kenai land for sale with owner-direct FSBO tools, parcel maps, due diligence guides, and Alaska acreage insights."
+        schema={homeSchema}
       />
       <div className="space-y-20 pb-6">
         <section className="relative overflow-hidden">
@@ -317,7 +349,8 @@ export default function HomePage() {
             </div>
           </div>
         </section>
-      </div>
+            <CrossTrafficAds />
+</div>
     </>
   )
 }

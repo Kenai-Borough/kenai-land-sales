@@ -1,10 +1,12 @@
 import { Link } from 'react-router-dom'
 import { ShieldCheck, Trees } from 'lucide-react'
 import { sisterSites } from '../data/parcels'
+import { KenaiNetworkBanner } from '../KenaiNetworkBanner'
 
 export default function Footer() {
   return (
     <footer className="mt-24 border-t border-white/10 bg-[var(--color-surface)]">
+        <KenaiNetworkBanner />
       <div className="mx-auto grid max-w-7xl gap-10 px-4 py-14 sm:px-6 lg:grid-cols-[1.3fr_.9fr_.9fr] lg:px-8">
         <div>
           <h3 className="text-2xl font-semibold">Kenai Land Sales</h3>

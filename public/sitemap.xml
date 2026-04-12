@@ -2,10 +2,16 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://kenailandsales.com/</loc></url>
   <url><loc>https://kenailandsales.com/browse</loc></url>
+  <url><loc>https://kenailandsales.com/create-listing</loc></url>
+  <url><loc>https://kenailandsales.com/dashboard</loc></url>
+  <url><loc>https://kenailandsales.com/login</loc></url>
+  <url><loc>https://kenailandsales.com/signup</loc></url>
+  <url><loc>https://kenailandsales.com/how-it-works</loc></url>
+  <url><loc>https://kenailandsales.com/safety</loc></url>
   <url><loc>https://kenailandsales.com/guide</loc></url>
+  <url><loc>https://kenailandsales.com/fsbo-guide</loc></url>
   <url><loc>https://kenailandsales.com/due-diligence</loc></url>
   <url><loc>https://kenailandsales.com/market-data</loc></url>
   <url><loc>https://kenailandsales.com/closing-process</loc></url>
-  <url><loc>https://kenailandsales.com/how-it-works</loc></url>
-  <url><loc>https://kenailandsales.com/safety</loc></url>
+  <url><loc>https://kenailandsales.com/admin</loc></url>
 </urlset>
