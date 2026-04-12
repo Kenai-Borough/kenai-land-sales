@@ -88,12 +88,8 @@ export default function HomePage() {
       <div className="space-y-20 pb-6">
         <section className="relative overflow-hidden">
           <div className="absolute inset-0">
-            <img
-              src="https://images.unsplash.com/photo-1511497584788-876760111969?auto=format&fit=crop&w=1800&q=80"
-              alt="Alaska wilderness"
-              className="h-full w-full object-cover"
-            />
-            <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(5,17,12,.88),rgba(10,33,22,.6),rgba(14,24,40,.7))]" />
+            <img src="/hero-illustration.svg" alt="" aria-hidden="true" className="h-full w-full object-cover opacity-90" />
+            <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(5,17,12,.88),rgba(10,33,22,.62),rgba(14,24,40,.72))]" />
           </div>
           <div className="relative mx-auto grid max-w-7xl gap-10 px-4 py-24 sm:px-6 lg:grid-cols-[1.1fr_.9fr] lg:px-8 lg:py-28">
             <div className="max-w-3xl">
