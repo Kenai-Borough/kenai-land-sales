@@ -89,6 +89,7 @@ export default function SignUpPage() {
             </button>
           </form>
           <p className="mt-6 text-sm text-[var(--color-muted)]">
+            <p className="mt-3 text-xs text-slate-400">By creating an account, you agree to our <Link to="/terms" className="text-sky-400 hover:underline">Terms of Service</Link> and <Link to="/privacy" className="text-sky-400 hover:underline">Privacy Policy</Link>.</p>
             Already have an account?{' '}
             <Link to="/login" className="font-semibold text-[var(--color-primary)]">
               Sign in
